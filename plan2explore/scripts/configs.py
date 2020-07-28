@@ -576,8 +576,11 @@ def _training_schedule(config, params):
   defaults.num_envs = params.get('num_envs', 1)
   defaults.num_episodes = params.get('collect_episodes', defaults.num_envs)
   defaults.num_steps = params.get('collect_steps', 500)
+  # defaults.num_steps = params.get('collect_steps', 50)
   defaults.steps_after = params.get('collect_every', 5000)
+  # defaults.steps_after = params.get('collect_every', 500)
   defaults.steps_every = params.get('collect_every', 5000)
+  # defaults.steps_every = params.get('collect_every', 500)
   defaults.steps_until = -1
   defaults.action_noise_type = params.get(
       'action_noise_type', 'additive_normal')
@@ -651,6 +654,7 @@ def _training_schedule(config, params):
 def _initial_collection(config, params):
   num_seed_episodes = int(params.get('num_seed_episodes', 5))
   num_seed_steps = int(params.get('num_seed_steps', 2500))
+  # num_seed_steps = int(params.get('num_seed_steps', 50))
   sims = tools.AttrDict()
   for task in config.train_tasks:
     sims['train-' + task.name] = tools.AttrDict(

@@ -350,6 +350,13 @@ def gym_cheetah(config, params):
       _gym_env, 'HalfCheetah-v3', config, params, action_repeat)
   return Task('gym_cheetah', env_ctor, state_components)
 
+def carbongym_bookcase(config, params):
+    # Works with `isolate_envs: process`.
+    action_repeat = params.get('action_repeat', 1)
+    state_components = ['state']
+    env_ctor = tools.bind(
+        _carbongym_env, '', config, params, action_repeat)
+    return Task('gym_cheetah', env_ctor, state_components)
 
 def gym_racecar(config, params):
   # Works with `isolate_envs: thread`.
@@ -427,6 +434,22 @@ def _gym_env(
       env, (size, size), np.uint8, 'image', render_mode)
   return _common_env(env, config, params)
 
+def _carbongym_env(
+        name, config, params, action_repeat, select_obs=None, obs_is_image=False,
+        render_mode='rgb_array'):
+    from hrl_exp.envs.franka_bookcase import GymFrankaBookCaseVecEnv
+    from hrl_exp.envs.wrappers import SingleEnvWrapper
+    from autolab_core import YamlConfig
+    cfg = '../hrl-exp/cfg/run_franka_bookcase.yaml'
+    cfg = YamlConfig(cfg)
+    env = SingleEnvWrapper(GymFrankaBookCaseVecEnv(cfg, **cfg['env']))
+    env = control.wrappers.ObservationDict(env, 'state')
+    size = params.get('render_size', 64)
+    env = control.wrappers.PixelObservations(
+        env, (size, size), np.float32, 'image', render_mode)
+    params.unlock()
+    params['max_length'] = 1000
+    return _common_env(env, config, params)
 
 def _common_env(env, config, params):
   env = control.wrappers.MinimumDuration(env, config.batch_shape[0])

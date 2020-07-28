@@ -144,7 +144,7 @@ class PixelObservations(object):
 
   @property
   def observation_space(self):
-    high = {np.uint8: 255, np.float: 1.0}[self._dtype]
+    high = {np.uint8: 255, np.float32: 1.0}[self._dtype]
     image = gym.spaces.Box(0, high, self._size + (3,), dtype=self._dtype)
     spaces = self._env.observation_space.spaces.copy()
     assert self._key not in spaces
@@ -764,6 +764,9 @@ class CollectDataset(object):
   def _get_episode(self):
     episode = {k: [t[k] for t in self._episode] for k in self._episode[0]}
     episode = {k: np.array(v) for k, v in episode.items()}
+    li = [s for s in episode['state']]
+    li[0] = li[0][0]
+    episode['state'] = np.array(li, dtype=np.float32)
     for key, sequence in episode.items():
       if sequence.dtype not in (np.uint8, np.float32, np.float64, np.bool):
         message = "Sequence for key {} is of unexpected type {}:\n{}"

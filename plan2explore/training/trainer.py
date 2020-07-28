@@ -225,6 +225,7 @@ class Trainer(object):
   def _create_session(self):
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
+    
     try:
       return tf.Session('local', config=config)
     except tf.errors.NotFoundError:
