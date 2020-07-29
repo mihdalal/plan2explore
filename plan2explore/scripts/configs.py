@@ -171,7 +171,8 @@ def make_config(params):
 
 
 def _data_processing(config, params):
-  config.batch_shape = params.get('batch_shape', (50, 50))
+  # config.batch_shape = params.get('batch_shape', (50, 50))
+  config.batch_shape = params.get('batch_shape', (10, 10))
   config.num_chunks = params.get('num_chunks', 1)
   image_bits = params.get('image_bits', 8)
   config.preprocess_fn = tools.bind(
