@@ -370,7 +370,7 @@ def carbongym_pickplace(config, params):
     env_ctor = tools.bind(
         _carbongym_env, '', config, params, GymFrankaPickAndPlaceVecEnv,
         # '/home/murtaza/research/hrl-exp/cfg/run_franka_pick_and_place.yaml'
-        '/home/pathak-visitorq1/projects/hrl-exp-proj/hrl-exp/cfg/run_franka_pick_and_place.yaml'
+        '/home/pathak-visitor1/projects/hrl-exp-proj/hrl-exp/cfg/run_franka_pick_and_place.yaml'
     )
     return Task('carbongym_pickplace', env_ctor, state_components)
 
