@@ -356,7 +356,7 @@ def carbongym_bookcase(config, params):
     state_components = ['state']
     env_ctor = tools.bind(
         _carbongym_env, '', config, params, action_repeat)
-    return Task('gym_cheetah', env_ctor, state_components)
+    return Task('carbongym_bookcase', env_ctor, state_components)
 
 def gym_racecar(config, params):
   # Works with `isolate_envs: thread`.
@@ -448,7 +448,7 @@ def _carbongym_env(
     env = control.wrappers.PixelObservations(
         env, (size, size), np.float32, 'image', render_mode)
     params.unlock()
-    params['max_length'] = 1000
+    params['max_length'] = 10
     return _common_env(env, config, params)
 
 def _common_env(env, config, params):
