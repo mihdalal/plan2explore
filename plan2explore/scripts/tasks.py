@@ -19,6 +19,10 @@ from __future__ import print_function
 import collections
 import os
 
+from autolab_core import YamlConfig
+from hrl_exp.envs.franka_bookcase import GymFrankaBookCaseVecEnv
+from hrl_exp.envs.franka_pick_and_place import GymFrankaPickAndPlaceVecEnv
+from hrl_exp.envs.wrappers import SingleEnvWrapper
 import numpy as np
 
 from plan2explore import control
@@ -352,11 +356,23 @@ def gym_cheetah(config, params):
 
 def carbongym_bookcase(config, params):
     # Works with `isolate_envs: process`.
-    action_repeat = params.get('action_repeat', 1)
     state_components = ['state']
     env_ctor = tools.bind(
-        _carbongym_env, '', config, params, action_repeat)
+        _carbongym_env, '', config, params, GymFrankaBookCaseVecEnv,
+        # '/home/murtaza/research/hrl-exp/cfg/run_franka_bookcase.yaml'
+        '/home/pathak-visitor1/projects/hrl-exp-proj/hrl-exp/cfg/run_franka_bookcase.yaml'
+    )
     return Task('carbongym_bookcase', env_ctor, state_components)
+
+def carbongym_pickplace(config, params):
+    # Works with `isolate_envs: process`.
+    state_components = ['state']
+    env_ctor = tools.bind(
+        _carbongym_env, '', config, params, GymFrankaPickAndPlaceVecEnv,
+        # '/home/murtaza/research/hrl-exp/cfg/run_franka_pick_and_place.yaml'
+        '/home/pathak-visitorq1/projects/hrl-exp-proj/hrl-exp/cfg/run_franka_pick_and_place.yaml'
+    )
+    return Task('carbongym_pickplace', env_ctor, state_components)
 
 def gym_racecar(config, params):
   # Works with `isolate_envs: thread`.
@@ -435,18 +451,14 @@ def _gym_env(
   return _common_env(env, config, params)
 
 def _carbongym_env(
-        name, config, params, action_repeat, select_obs=None, obs_is_image=False,
+        name, config, params, env_class, cfg,
         render_mode='rgb_array'):
-    from hrl_exp.envs.franka_bookcase import GymFrankaBookCaseVecEnv
-    from hrl_exp.envs.wrappers import SingleEnvWrapper
-    from autolab_core import YamlConfig
-    cfg = '../hrl-exp/cfg/run_franka_bookcase.yaml'
     cfg = YamlConfig(cfg)
-    env = SingleEnvWrapper(GymFrankaBookCaseVecEnv(cfg, **cfg['env']))
+    env = SingleEnvWrapper(env_class(cfg, **cfg['env']))
     env = control.wrappers.ObservationDict(env, 'state')
     size = params.get('render_size', 64)
     env = control.wrappers.PixelObservations(
-        env, (size, size), np.float32, 'image', render_mode)
+        env, (size, size), np.uint8, 'image', render_mode)
     params.unlock()
     params['max_length'] = 10
     return _common_env(env, config, params)
