@@ -99,10 +99,10 @@ class PyBatchEnv(object):
     return getattr(self._envs[0], name)
 
   def step(self, actions):
-    for index, (env, action) in enumerate(zip(self._envs, actions)):
-      if not env.action_space.contains(action):
-        message = 'Invalid action for batch index {}: {}'
-        raise ValueError(message.format(index, action))
+    # for index, (env, action) in enumerate(zip(self._envs, actions)):
+      # if not env.action_space.contains(action):
+      #   message = 'Invalid action for batch index {}: {}'
+      #   raise ValueError(message.format(index, action))
     if self._blocking:
       transitions = [
           env.step(action)
